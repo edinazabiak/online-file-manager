@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+:root {
+    --bg-color: #f1faee;
+    --font-color: #1a1a1a;
+    --primary-color: #1d3557;
+    --medium-primary-color: #457b9d;
+    --light-primary-color: #a8dadc;
+    --secondary-color: #e63946;
+
+    --font-family: 'Open sans', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+    text-decoration: none;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    font-family: var(--font-family);
+}
+
+main {
+    min-height: 100%;
+    margin: 0 auto -50px;
+}
+
+footer {
+    height: 50px;
+    background-color: var(--light-primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    letter-spacing: 1px;
+    font-size: .9rem;
+}
+
+input {
+    padding: 10px;
+    font-size: .9rem;
+    font-family: var(--font-family);
+    margin: 5px 3px;
+}
+
+.btn {
+    border-radius: 10px;
+    color: var(--bg-color);
+    padding: 10px;
+    font-size: .9rem;
+    font-family: var(--font-family);
+}
+
+.btn:hover {
+    background-color: transparent;
+}
+
+.btn-primary {
+    background-color: var(--medium-primary-color);
+    border: 1px solid var(--medium-primary-color);
+}
+
+.btn-primary:hover {
+    color: var(--medium-primary-color);
+}
+
+.btn-secondary {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+    color: var(--primary-color);
+}
+
+.btn-delete {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--secondary-color);
+}
+
+.btn-delete:hover {
+    color: var(--secondary-color);
+}
+
+h1 {
+    margin-bottom: 2rem;
+}
+
+.error {
+    box-shadow: 0px 0px 5px var(--secondary-color);
+}
+
+.error-text {
+    font-size: .8rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+
+
+
+
+/* Login */
+.login_system_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 5rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 400px;
+}
+
+
+
+
+
+/* 404 error */
+.http-error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.http-error h1 {
+    color: var(--secondary-color);
+    border: 1px solid var(--secondary-color);
+    padding: 10px;
+    text-transform: uppercase;
+}
+
+.http-error h2 {
+    font-weight: 300;
+    font-size: 1.2rem;
+}
