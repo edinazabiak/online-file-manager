@@ -6,17 +6,20 @@ class Routing {
     {
         $login = new LoginView();
         $home = new HomeView();
+        $upload = new UploadView();
 
         if (isset($_SESSION["username"]) && $_SESSION["username"] != null) {
             if ($parts[2] == "home") {
-                $home->show($_SESSION["username"]); 
+                $home->showHome(); 
+            } else if ($parts[2] == "upload") {
+                $upload->showForm();
             } else if ($parts[2] == "sign-up") {
                 header("Location: .");
             } else {
                 header("Location: home");
             }
         } else {
-            if ($parts[2] == "home") {
+            if ($parts[2] == "home" || $parts[2] == "upload") {
                 header("Location: .");
             } else if ($parts[2] == "sign-up") {
                 $login->showSignUp();

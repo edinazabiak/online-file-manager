@@ -10,4 +10,13 @@ class HomeModel extends Database
         parent::__construct($password);
     }
 
+    public function getFilesByUsername(string $username) : array
+    {
+        $sql = "SELECT * FROM files WHERE user_id = ? ORDER BY name";
+        $stmt = $this->connectDatabase()->prepare($sql);
+        $stmt->execute([$username]);
+        
+        return $stmt->fetchAll();
+    }
+
 }

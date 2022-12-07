@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
 
 :root {
-    --bg-color: #f1faee;
+    --bg-color: #f7f7ff;
     --font-color: #1a1a1a;
-    --primary-color: #1d3557;
-    --medium-primary-color: #457b9d;
-    --light-primary-color: #a8dadc;
-    --secondary-color: #e63946;
+    --primary-color: #495867;
+    --medium-primary-color: #577399;
+    --light-primary-color: #bdd5ea;
+    --secondary-color: #fe5f55;
 
     --font-family: 'Open sans', sans-serif;
 }
@@ -26,6 +26,17 @@ body {
     background-color: var(--bg-color);
     color: var(--font-color);
     font-family: var(--font-family);
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-content: center;
+    padding: 1rem 0;
+    background: var(--primary-color);
+    color: var(--bg-color);
+    text-transform: uppercase;
 }
 
 main {
@@ -51,6 +62,49 @@ input {
     margin: 5px 3px;
 }
 
+span {
+    margin: 0 .5rem;
+    font-size: 1.3rem!important;
+}
+
+h1 {
+    margin-bottom: 2rem;
+}
+
+h2 {
+    margin: .3rem 0;
+}
+
+section {
+    width: calc(100% - 14rem);
+    margin: 3rem 7rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 400px;
+}
+
+table {
+    width: 100%;
+}
+
+table tbody tr {
+    text-align: left;
+    margin: .5rem 0;
+}
+
+table tbody tr td:first-child {
+    width: 40%;
+}
+
+
+
+
+
+/* Újrafelhasználható osztályok */
 .btn {
     border-radius: 10px;
     color: var(--bg-color);
@@ -81,6 +135,16 @@ input {
     color: var(--primary-color);
 }
 
+.btn-light {
+    background-color: var(--light-primary-color);
+    border: 1px solid var(--light-primary-color);
+    color: var(--font-color);
+}
+
+.btn-light:hover {
+    color: var(--light-primary-color);
+}
+
 .btn-delete {
     background-color: var(--secondary-color);
     border: 1px solid var(--secondary-color);
@@ -88,10 +152,6 @@ input {
 
 .btn-delete:hover {
     color: var(--secondary-color);
-}
-
-h1 {
-    margin-bottom: 2rem;
 }
 
 .error {
@@ -102,6 +162,10 @@ h1 {
     font-size: .8rem;
     color: var(--secondary-color);
     margin-bottom: 1rem;
+}
+
+.btn-forms {
+    display: initial;
 }
 
 
@@ -116,11 +180,26 @@ h1 {
     padding-top: 5rem;
 }
 
-.login-form {
+
+
+
+
+/* Home */
+.modify-icons {
     display: flex;
-    flex-direction: column;
-    text-align: center;
-    width: 400px;
+    flex-direction: row;
+    justify-content: right;
+    margin: .5rem 0;
+}
+
+
+
+
+
+/* Upload, new file, send */
+.functions-section {
+    display: flex;
+    justify-content: center;
 }
 
 

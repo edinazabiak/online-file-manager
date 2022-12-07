@@ -77,7 +77,7 @@ class LoginView extends LoginController
         echo "
             <div class='login_system_box'>
                 <h1>Bejelentkezés</h1>
-                <form class='login-form' method='POST'>";
+                <form method='POST'>";
                 $this->showLoginError();
                 echo "
                     <div>
@@ -191,11 +191,11 @@ class LoginView extends LoginController
         echo "
             <div class='login_system_box'>
                 <h1>Regisztráció</h1>
-                <form class='login-form' method='POST'>";
+                <form method='POST'>";
                 $this->showSignUpError();
                 echo "
                     <div>
-                        <input type='submit' class='btn btn-primary' name='signup' value='Regisztráció'>
+                        <input type='submit' class='btn btn-primary' name='signup' value='Megerősítés'>
                         <input type='submit' class='btn btn-secondary' name='back' value='Vissza'>
                     </div>
                 </form>
