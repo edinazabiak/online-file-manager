@@ -10,29 +10,81 @@ class UploadModel extends Database {
         parent::__construct($password);
     }
 
-    public function uploadFile(string $name, string $original_name, int $size, string $type, string $tmp) : bool
+    public function createFile(string $username, string $name, string $content) : bool
     {
-        $path = "./assets/files/" . $_SESSION["username"];
+        $path = "./assets/files/" . $username . "/". basename($name) . ".txt";
+        $file = fopen($path, "w") or die("A fájl létrehozása nem sikerült!");
+        fwrite($file, $content);
+        fclose($file);
+
+        $file_info = pathinfo($path);
+
+        $name = $file_info["basename"];
+        $type = $file_info["extension"];
+        $size = strval(filesize($path));
+
+        $storage = $this->getStorageByUsername($username)[0]["storage"];
+        if ($storage < $size) {
+            unlink($file);
+            return false;
+        }
+
+        $new_size = $storage - $size;
+        $this->updateStorage($username, $new_size);
+        $this->insertFile($name, $name, $size, $type);
+        
+        return true;
+    }
+
+    public function uploadFile(string $username, string $filename, string $original_name, int $size, string $type, string $tmp) : bool
+    {
+        $storage = $this->getStorageByUsername($username)[0]["storage"];
+        if ($storage < $size) {
+            return false;
+        }
+
+        $path = "./assets/files/" . $username;
         if (!is_dir($path)) {
             mkdir($path);
         }
 
         try {
-            move_uploaded_file($tmp, $path . "/". basename($name));
+            move_uploaded_file($tmp, $path . "/". basename($original_name));
         } catch(Exception $e) {
-            return false;
+            die("A fájl feltöltése nem sikerült!" . $e->getMessage());
         }
 
-        $this->insertFile($name, $original_name, $size, $type);
+        $new_size = $storage - $size;
+        $this->updateStorage($username, $new_size);
+        $this->insertFile($filename, $original_name, $size, $type);
         return true;
     }
 
-    public function insertFile(string $name, string $original_name, int $size, string $type) : void
+    public function getStorageByUsername(string $username) : array
+    {
+        $sql = "SELECT storage FROM user WHERE username = ?";
+        $stmt = $this->connectDatabase()->prepare($sql);
+        $stmt->execute([$username]);
+        
+        return $stmt->fetchAll();
+    }
+
+    public function updateStorage(string $username, int $size) : void
+    {
+        $sql = "UPDATE user SET storage=? WHERE username=?";
+        $stmt = $this->connectDatabase()->prepare($sql);
+        $stmt->execute([
+            $size,
+            $username 
+        ]);
+    }
+
+    public function insertFile(string $filename, string $original_name, int $size, string $type) : void
     {
         $sql = "INSERT INTO files (name, original_name, size, type, user_id) VALUES (?,?,?,?,?)";
         $stmt = $this->connectDatabase()->prepare($sql);
         $stmt->execute([
-            $name, 
+            $filename, 
             $original_name, 
             $size, 
             $type, 

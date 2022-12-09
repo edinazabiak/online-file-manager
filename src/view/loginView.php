@@ -35,6 +35,7 @@ class LoginView extends LoginController
             if ($this->loginErrors["match"] == 1) {
                 //setcookie("username", $_POST["username"], time()+60);
                 $_SESSION["username"] = $this->username;
+                $_SESSION["name"] = $this->getUser($this->username)[0]["Name"];
                 header("Location: home");
             }
         }

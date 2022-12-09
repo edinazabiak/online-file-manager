@@ -24,4 +24,9 @@ class LoginController extends LoginModel {
         $this->insertUser($name, $username, $email, $password);
     }
 
+    public function getUser(string $username) : array
+    {
+        return $this->getUserByUsername($username);
+    }
+
 }
