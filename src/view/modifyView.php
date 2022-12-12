@@ -24,7 +24,7 @@ class ModifyView extends ModifyController {
     public function validUser() : void
     {
         $hash_id = explode("/", $_SERVER["REQUEST_URI"])[3];
-        $valid_user = $this->validUserAndFile($hash_id, $_SESSION["username"]);
+        $valid_user = $this->validUserAndFile($hash_id);
 
         if ($valid_user == false) {
             header("Location: ./../");
@@ -34,14 +34,16 @@ class ModifyView extends ModifyController {
     public function getFile(): void
     {
         $hash_id = explode("/", $_SERVER["REQUEST_URI"])[3];
-        $this->file = $this->getDatasOfFile($hash_id, $_SESSION["username"]);
+        $this->file = $this->getDatasOfFile($hash_id);
     }
 
     public function showModifyForm() : void
     {
         $this->validUser();
         $this->getFile();
-        $this->content = $this->getContentOfFile($this->file[1] . "." . $this->file[2], $_SESSION["username"]);
+        if ($this->file[2] == "txt") {
+            $this->content = $this->getContentOfFile($this->file[1] . "." . $this->file[2]);
+        }
 
         if (isset($_POST["back"])) {
             header("Location: .");
@@ -55,15 +57,15 @@ class ModifyView extends ModifyController {
                 $this->modifyName($this->file[0], $_POST["name"] . "." . $this->file[2]);
                 $this->success = true;
             } else if (!empty($_POST["name"]) && $this->file[2] == "txt"){
-                $this->modifyFile($_SESSION["username"], $_POST["name"], $_POST["content"]);
-                $this->content = $this->getContentOfFile($this->file[1] . "." . $this->file[2], $_SESSION["username"]);
+                $this->modifyFile($this->file[0], $_POST["name"], $_POST["content"]);
+                $this->content = $this->getContentOfFile($this->file[1] . "." . $this->file[2]);
                 $this->success = true;
             }
         }
 
         $page = new PageElement();
         $page->head(true, true);
-        $page->header($_SESSION["name"]);
+        $page->header($_SESSION["name"], true);
 
         echo "<section class='file-form'>
             <h2>Fájl módosítása</h2>";

@@ -81,13 +81,14 @@ class UploadModel extends Database {
 
     public function insertFile(string $filename, string $original_name, int $size, string $type) : void
     {
-        $sql = "INSERT INTO files (name, original_name, size, type, user_id) VALUES (?,?,?,?,?)";
+        $sql = "INSERT INTO files (name, original_name, size, type, user_id, original_user_id) VALUES (?,?,?,?,?,?)";
         $stmt = $this->connectDatabase()->prepare($sql);
         $stmt->execute([
             $filename, 
             $original_name, 
             $size, 
             $type, 
+            $_SESSION["username"],
             $_SESSION["username"]
         ]);
     }

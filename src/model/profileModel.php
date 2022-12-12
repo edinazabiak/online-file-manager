@@ -9,41 +9,41 @@ class ProfileModel extends Database {
         parent::__construct($password);
     }
 
-    public function getUserByUsername(string $username) : array
+    public function getUserByUsername() : array
     {
         $sql = "SELECT * FROM user WHERE username = ?";
         $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username]);
+        $stmt->execute([$_SESSION["username"]]);
         
         return $stmt->fetchAll();
     }
 
-    public function getFilesNumberByUsername(string $username) : array
+    public function getFilesNumberByUsername() : array
     {
         $sql = "SELECT count(*) number FROM files WHERE user_id = ?";
         $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username]);
+        $stmt->execute([$_SESSION["username"]]);
         
         return $stmt->fetchAll();
     }
 
-    public function updateNameByUsername(string $username, string $name) : void
+    public function updateNameByUsername(string $name) : void
     {
         $sql = "UPDATE user SET name=? WHERE username=?";
         $stmt = $this->connectDatabase()->prepare($sql);
         $stmt->execute([
             $name,
-            $username
+            $_SESSION["username"]
         ]);
     }
 
-    public function updatePasswordByUsername(string $username, string $password) : void
+    public function updatePasswordByUsername(string $password) : void
     {
         $sql = "UPDATE user SET password=? WHERE username=?";
         $stmt = $this->connectDatabase()->prepare($sql);
         $stmt->execute([
             $password,
-            $username
+            $_SESSION["username"]
         ]);
     }
 }

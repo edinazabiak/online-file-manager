@@ -9,20 +9,20 @@ class ModifyModel extends Database {
         parent::__construct($password);
     }
 
-    public function getFilesByUsername(string $username) : array
+    public function getFilesByUsername() : array
     {
         $sql = "SELECT * FROM files WHERE user_id = ?";
         $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username]);
+        $stmt->execute([$_SESSION["username"]]);
         
         return $stmt->fetchAll();
     }
 
-    public function getFileByUsernameAndId(string $id, string $username) : array
+    public function getFileByUsernameAndId(string $id) : array
     {
         $sql = "SELECT * FROM files WHERE user_id = ? and id = ?";
         $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username, $id]);
+        $stmt->execute([$_SESSION["username"], $id]);
         
         return $stmt->fetchAll();
     }
@@ -37,9 +37,19 @@ class ModifyModel extends Database {
         ]);
     }
 
-    public function updateFile(string $username, string $name, string $content) : void
+    public function updateModifyAt(string $id) : void
     {
-        $path = "./assets/files/" . $username . "/". basename($name) . ".txt";
+        $sql = "UPDATE files SET modify_at=? WHERE id=?";
+        $stmt = $this->connectDatabase()->prepare($sql);
+        $stmt->execute([
+            date("Y-m-d H:i:s"),
+            $id 
+        ]);
+    }
+
+    public function updateFile(string $name, string $content) : void
+    {
+        $path = "./assets/files/" . $_SESSION["username"] . "/". basename($name) . ".txt";
         $file = fopen($path, "w") or die("A fájl megnyitása nem sikerült!");
         fwrite($file, $content);
         fclose($file);

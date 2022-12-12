@@ -5,14 +5,17 @@ class HomeView extends HomeController {
     public function __construct(
         private array $files = [],
         private string $sort_id = "1",
-        private string $search = ""
+        private string $search = "",
+        private int $total_pages = 0,
+        private int $active_page = 1, 
+        private array $selected = []
         ) {}
 
     public function downloadFile()
     {
         if (isset($_POST["download"])) {
             $id = $_POST["file_id"];
-            $file = $this->chooseFileToDownload($id, $_SESSION["username"]);
+            $file = $this->chooseFileToDownload($id);
             
             $filename = "./assets/files/" . $_SESSION["username"] . "/" . basename($file[0]["original_name"]);
 
@@ -34,7 +37,7 @@ class HomeView extends HomeController {
     {
         if (isset($_POST["delete"])) {
             $id = $_POST["file_id"];
-            $this->chooseFileToDelete($id, $_SESSION["username"]);
+            $this->chooseFileToDelete($id);
             header("Location: .");
         }
     }
@@ -43,7 +46,7 @@ class HomeView extends HomeController {
     {
         if (isset($_POST["sort"])) {
             $this->sort_id = $_POST["sort_id"];
-            $this->files = $this->listOfFiles($_SESSION["username"], $this->sort_id);
+            $this->files = $this->listOfFiles($this->sort_id, 1);
         }
     }
 
@@ -51,14 +54,22 @@ class HomeView extends HomeController {
     {
         if (isset($_POST["search"])) {
             $this->search = $_POST["search_text"];
-            $this->files = $this->listOfFiles($_SESSION["username"], $this->sort_id, $this->search);
+            $this->total_pages = $this->countOfPages($this->sort_id, $this->search);
+            $this->files = $this->listOfFiles($this->sort_id, 1, $this->search);
         }
     }
 
     public function all() : void
     {
         if (isset($_POST["all"])) {
-            $this->files = $this->listOfFiles($_SESSION["username"], $this->sort_id);
+            $this->files = $this->listOfFiles($this->sort_id, 1);
+        }
+    }
+
+    public function chooseFile()
+    {
+        if (isset($_POST["send-file"])) {
+            echo "Küld";
         }
     }
 
@@ -67,28 +78,43 @@ class HomeView extends HomeController {
         echo "<section class='list-box'>
         <table>
             <tr>
+                <th></th>
                 <th>Fájl neve</th>
                 <th>Tulajdonos</th>
                 <th>Létrehozás dátuma</th>
                 <th>Utolsó módosítás</th>
                 <th></th>
             </tr>";
+            $num = 1;
             foreach($this->files as $file) {
                 echo "
-                <tr id='" . $file['id'] . "'>
+                <tr>
+                    <td>" . $num . "</td>
                     <td>" . $file['name'] . "</td>
-                    <td>" . $file['user_id'] . "</td>
+                    <td>";
+                if ($file['user_id'] == $file['original_user_id']) {
+                    echo $file['user_id'];
+                } else {
+                    echo $file['user_id'] . "<span class='original_user'>(küldte: " . $file['original_user_id'] . ")</span>";
+                }
+                echo "</td>
                     <td>" . $file['created_at'] . "</td>
                     <td>" . $file['modify_at'] . "</td>
                     <td>";
-                echo "<form method='POST' class='btn-forms'>
-                        <a href='file/" . hash("md2", $file['id']) . "' name='modify' class='btn btn-primary btn-icon'><ion-icon name='create-outline'></ion-icon></a>
+                echo "<form method='POST' class='btn-forms'>";
+                if ($this->active_page == 1) {
+                    echo "<a href='file/" . hash("md2", $file['id']) . "' name='modify' class='btn btn-primary btn-icon'><ion-icon name='create-outline'></ion-icon></a>";
+                } else {
+                    echo "<a href='../file/" . hash("md2", $file['id']) . "' name='modify' class='btn btn-primary btn-icon'><ion-icon name='create-outline'></ion-icon></a>";
+                }
+                echo "
                         <button type='submit' name='download' class='btn btn-secondary btn-icon'><ion-icon name='cloud-download-outline'></ion-icon></button>
                         <input type='hidden' name='file_id' value='" . $file['id'] . "'>
                         <button type='submit' name='delete' class='btn btn-delete btn-icon'><ion-icon name='trash-outline'></ion-icon></button>    
                     </form>
                     </td>
                 </tr>";
+                $num++;
             }
         echo "</table></section>";
     }
@@ -98,10 +124,16 @@ class HomeView extends HomeController {
 
         echo "
         <section class='functions-section'>
-            <form class='btn-forms' method='POST'>
-                <a href='upload' class='btn btn-primary' name='new'><ion-icon name='cloud-upload-outline'></ion-icon> Fájl feltöltése</a>
-                <a href='add-new-file' class='btn btn-secondary' name='new'><ion-icon name='add-outline'></ion-icon> Új fájl létrehozása</a>
-                <a href='send-file' class='btn btn-light' name='new'><ion-icon name='send-outline'></ion-icon> Fájl küldése</a>
+            <form class='btn-forms' method='POST'>";
+        if ($this->active_page == 1) {
+            echo "<a href='./upload' class='btn btn-primary' name='new'><ion-icon name='cloud-upload-outline'></ion-icon> Fájl feltöltése</a>
+            <a href='./add-new-file' class='btn btn-secondary' name='new'><ion-icon name='add-outline'></ion-icon> Új fájl létrehozása</a>";
+            //<a href='.' class='btn btn-light' name='send-file'><ion-icon name='send-outline'></ion-icon> Fájl küldése</a>
+        } else {
+            echo "<a href='../upload' class='btn btn-primary' name='new'><ion-icon name='cloud-upload-outline'></ion-icon> Fájl feltöltése</a>
+            <a href='../add-new-file' class='btn btn-secondary' name='new'><ion-icon name='add-outline'></ion-icon> Új fájl létrehozása</a>";
+        }
+        echo "
             </form>
             <div class='btn-forms'>";
 
@@ -145,6 +177,27 @@ class HomeView extends HomeController {
         ";
     }
 
+    public function showPagination() : void
+    {
+        echo "<section class='pagination-section'>";
+        for($i = 1; $i <= $this->total_pages; $i++) {
+            if ($i == $this->active_page) {
+                if ($i == 1) {
+                    echo "<p class='pagination-num active'>" . $i . "</p>";
+                } else {
+                    echo "<p class='pagination-num active'>" . $i . "</p>";
+                }
+            } else {
+                if ($i == 1) {
+                    echo "<a class='pagination-num' href='./../home'>" . $i . "</a>";
+                } else {
+                    echo "<a class='pagination-num' href='./home/" . $i . "'>" . $i . "</a>";
+                }
+            }
+        }
+        echo "</section>";
+    }
+
     // public function deleteModal() : void
     // {
     //     if (isset($_POST["delete"])) {
@@ -162,19 +215,27 @@ class HomeView extends HomeController {
     //     </div>";
     // }
 
-    public function showHome() : void
+    public function showHome(int $page_num) : void
     {
-        $this->files = $this->listOfFiles($_SESSION["username"], $this->sort_id);
+        $this->files = $this->listOfFiles($this->sort_id, $page_num);
+        $this->total_pages = $this->countOfPages($this->sort_id);
+        $this->active_page = $page_num;
 
         $this->deleteFile();
         $this->downloadFile();
         
         $page = new PageElement();
-        $page->head(true);
-        $page->header($_SESSION["name"]);
+        if ($this->active_page == 1) {
+            $page->head(true);
+            $page->header($_SESSION["name"]);
+        } else {
+            $page->head(true, true);
+            $page->header($_SESSION["name"], true);
+        }
 
         $this->showFunctions();
         $this->showFiles();
+        $this->showPagination();
         //$this->deleteModal();
 
         $page->footer();

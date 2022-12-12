@@ -30,7 +30,7 @@ class ProfileView extends ProfileController {
 
     public function showForm() : void
     {
-        $user = $this->getDatasAboutUser($_SESSION["username"]);
+        $user = $this->getDatasAboutUser();
 
         echo "<section>
             <h2>Adatok megváltoztatása</h2>
@@ -53,7 +53,7 @@ class ProfileView extends ProfileController {
 
     public function showStatistics() : void
     {
-        $result = $this->getNumbersAboutUser($_SESSION["username"]);
+        $result = $this->getNumbersAboutUser();
 
         echo "<section>
             <h2>Statisztika</h2>
@@ -71,7 +71,7 @@ class ProfileView extends ProfileController {
             if (!empty($_POST["name"])) {
                 $_SESSION["name"] = $_POST["name"];
             }
-            $this->modifyName($_SESSION["username"], $_SESSION["name"]);
+            $this->modifyName($_SESSION["name"]);
                 header("Location: .");
         }
 
@@ -87,7 +87,7 @@ class ProfileView extends ProfileController {
             }
 
             if ($this->errors["password"] == 1 && $this->errors["repassword"] == 1 && $this->errors["match"] == 1) {
-                $this->modifyPassword($_SESSION["username"], hash("sha256", $_POST["password"]));
+                $this->modifyPassword(hash("sha256", $_POST["password"]));
                 header("Location: .");
             }
 

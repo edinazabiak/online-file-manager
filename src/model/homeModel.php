@@ -10,67 +10,99 @@ class HomeModel extends Database
         parent::__construct($password);
     }
 
-    public function getFilesByUsernameOrderByName(string $username) : array
+    public function getFilesByUsernameOrderByName(?array $limit = null) : array
     {
-        $sql = "SELECT * FROM files WHERE user_id = ? ORDER BY name";
-        $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username]);
+        if ($limit == null) {
+            $sql = "SELECT * FROM files WHERE user_id = ? ORDER BY name";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"]]);
         
-        return $stmt->fetchAll();
+            return $stmt->fetchAll();
+        } else {
+            $sql = "SELECT * FROM files WHERE user_id = ? ORDER BY name LIMIT " . $limit[0] . "," . $limit[1] ."";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"]]);
+            
+            return $stmt->fetchAll();
+        }
     }
 
-    public function getFilesByUsernameOrderByModifyAt(string $username) : array
+    public function getFilesByUsernameOrderByModifyAt(?array $limit = null) : array
     {
-        $sql = "SELECT * FROM files WHERE user_id = ? ORDER BY modify_at DESC";
-        $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username]);
+        if ($limit == null) {
+            $sql = "SELECT * FROM files WHERE user_id = ? ORDER BY modify_at DESC";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"]]);
         
-        return $stmt->fetchAll();
+            return $stmt->fetchAll();
+        } else {
+            $sql = "SELECT * FROM files WHERE user_id = ? ORDER BY modify_at DESC LIMIT " . $limit[0] . "," . $limit[1] ."";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"]]);
+            
+            return $stmt->fetchAll();
+        }
     }
 
-    public function getFilesByUsernameAndNameOrderByName(string $username, string $name) : array
+    public function getFilesByUsernameAndNameOrderByName(string $name, ?array $limit = null) : array
     {
-        $sql = "SELECT * FROM files WHERE user_id = ? AND name LIKE '%' ? '%' ORDER BY name";
-        $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username, $name]);
+        if ($limit == null) {
+            $sql = "SELECT * FROM files WHERE user_id = ? AND name LIKE '%' ? '%' ORDER BY name";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"], $name]);
         
-        return $stmt->fetchAll();
+            return $stmt->fetchAll();
+        } else {
+            $sql = "SELECT * FROM files WHERE user_id = ? AND name LIKE '%' ? '%' ORDER BY name LIMIT " . $limit[0] . "," . $limit[1] ."";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"], $name]);
+        
+            return $stmt->fetchAll();
+        }
     }
 
-    public function getFilesByUsernameAndNameOrderByModifyAt(string $username, string $name) : array
+    public function getFilesByUsernameAndNameOrderByModifyAt(string $name, ?array $limit = null) : array
     {
-        $sql = "SELECT * FROM files WHERE user_id = ? AND name LIKE '%' ? '%' ORDER BY modify_at DESC";
-        $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username, $name]);
-        
-        return $stmt->fetchAll();
+        if ($limit == null) {
+            $sql = "SELECT * FROM files WHERE user_id = ? AND name LIKE '%' ? '%' ORDER BY modify_at DESC";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"], $name]);
+            
+            return $stmt->fetchAll();
+        } else {
+            $sql = "SELECT * FROM files WHERE user_id = ? AND name LIKE '%' ? '%' ORDER BY modify_at DESC LIMIT " . $limit[0] . "," . $limit[1] ."";
+            $stmt = $this->connectDatabase()->prepare($sql);
+            $stmt->execute([$_SESSION["username"], $name]);
+            
+            return $stmt->fetchAll();
+        }
     }
 
-    public function getUserByUsername(string $username) : array
+    public function getUserByUsername() : array
     {
         $sql = "SELECT * FROM user WHERE username = ?";
         $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username]);
+        $stmt->execute([$_SESSION["username"]]);
         
         return $stmt->fetchAll();
     }
 
-    public function getFileByUsernameAndId(string $id, string $username) : array
+    public function getFileByUsernameAndId(string $id) : array
     {
         $sql = "SELECT * FROM files WHERE user_id = ? and id = ?";
         $stmt = $this->connectDatabase()->prepare($sql);
-        $stmt->execute([$username, $id]);
+        $stmt->execute([$_SESSION["username"], $id]);
         
         return $stmt->fetchAll();
     }
 
-    public function updateStorageByUsername(int $size, string $username) : void
+    public function updateStorageByUsername(int $size) : void
     {
         $sql = "UPDATE user SET storage=? WHERE username=?";
         $stmt = $this->connectDatabase()->prepare($sql);
         $stmt->execute([
             $size,
-            $username 
+            $_SESSION["username"] 
         ]);
     }
 
@@ -81,9 +113,9 @@ class HomeModel extends Database
         $stmt->execute([$id]);
     }
 
-    public function deleteFileFromFolder(string $file_name, string $username)
+    public function deleteFileFromFolder(string $file_name)
     {
-        $path = "./assets/files/" . $username . "/". basename($file_name);
+        $path = "./assets/files/" . $_SESSION["username"] . "/". basename($file_name);
         try {
             unlink($path);
         } catch(Exception $e) {
@@ -91,17 +123,17 @@ class HomeModel extends Database
         }
     }
 
-    public function manageDeleteFunction(string $id, string $username) : void
+    public function manageDeleteFunction(string $id) : void
     {
         //var_dump($this->getFileByUsernameAndId($id, $username));
         //echo $id . " - " . $username;
-        $file = $this->getFileByUsernameAndId($id, $username)[0];
-        $user = $this->getUserByUsername($username)[0];
+        $file = $this->getFileByUsernameAndId($id, $_SESSION["username"])[0];
+        $user = $this->getUserByUsername($_SESSION["username"])[0];
         $size = intval($user["Storage"]) + intval($file["size"]);
 
-        $this->updateStorageByUsername($size, $username);
+        $this->updateStorageByUsername($size, $_SESSION["username"]);
         $this->deleteFileById($id);
-        $this->deleteFileFromFolder($file["original_name"], $username);
+        $this->deleteFileFromFolder($file["original_name"], $_SESSION["username"]);
     }
 
 }

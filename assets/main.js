@@ -30,17 +30,22 @@ $(document).ready(function () {
         $(".select-options").hide(300);
     });
 
-    // $("#sort").click(function() {
-    //     var value = $("#sort_id").val();
-        
-    //     $.ajax({
-    //         url: ".",
-    //         type: "POST", 
-    //         data: "request=" + value,
-    //         success:function() {
-    //             $(".container").html(data);
-    //         }
+    // $(document).on('click', '.selected_files', function() {
+    //     var selected_files_id = [];
+
+    //     $('.selected_files:checked').each(function() {
+    //         $selected_files_id = $(this).val();
     //     });
+
+    //     console.log($selected_files_id);
+
+    //     $.ajax({
+    //         method: "POST", 
+    //         data: {selected_files_id: selected_files_id}, 
+    //         success: function(data){
+    //             console.log(data);
+    //         }
+    //     })
     // });
 
 });

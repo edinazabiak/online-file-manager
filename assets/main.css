@@ -102,7 +102,7 @@ table tbody tr {
     margin: .5rem 0;
 }
 
-table tbody tr td:first-child {
+table tbody tr td:nth-child(2) {
     width: 40%;
 }
 
@@ -249,6 +249,48 @@ main.modalBlur > *:not(.modal){
     flex-direction: row;
     justify-content: right;
     margin: .5rem 0;
+}
+
+.pagination-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination-num {
+    margin: 1rem .5rem;
+    background-color: var(--light-primary-color);
+    color: var(--font-color);
+    border: 1px solid var(--medium-primary-color);
+    padding: 5px 10px;
+}
+
+.pagination-num {
+    color: var(--primary-color);
+}
+
+.pagination-num:hover {
+    color: var(--medium-primary-color);
+}
+
+.active {
+    background-color: var(--medium-primary-color);
+    color: var(--light-primary-color);
+    cursor: default;
+}
+
+.active:hover {
+    color: var(--light-primary-color);
+}
+
+.original_user {
+    font-size: .7rem;
+    display: block;
+}
+
+.checkbox-form {
+    width: auto;
 }
 
 

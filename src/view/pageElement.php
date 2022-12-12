@@ -32,7 +32,7 @@ class PageElement {
         }
     }
 
-    public function header(string $username) : void
+    public function header(string $username, bool $page = false) : void
     {
         echo "<header>
             <h2>Üdv, $username!</h2>
@@ -48,11 +48,19 @@ class PageElement {
             // setcookie("username", null, time()-3600);
             session_unset();
             session_destroy();
-            header("Location: .");
+            if ($page == false) {
+                header("Location: .");
+            } else {
+                header("Location: ../");
+            }
         }
 
         if (isset($_POST["profile"])) {
-            header("Location: profile");
+            if ($page == false) {
+                header("Location: profile");
+            } else {
+                header("Location: ./../profile");
+            }
         }
     }
 
