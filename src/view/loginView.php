@@ -30,7 +30,7 @@ class LoginView extends LoginController
         $this->loginErrors["username"] = empty($this->username) ? 0 : 1;
         $this->loginErrors["password"] = empty($this->password) ? 0 : 1;
         if ($this->loginErrors["username"] == 1 && $this->loginErrors["password"] == 1) {
-            $this->loginErrors["match"] = $this->isExistsUsername($this->username, $this->password);
+            $this->loginErrors["match"] = $this->existsUsername($this->username, $this->password);
 
             if ($this->loginErrors["match"] == 1) {
                 //setcookie("username", $_POST["username"], time()+60);
@@ -96,7 +96,7 @@ class LoginView extends LoginController
         $this->signUpErrors["name"] = empty($this->name) ? 0 : 1;
         $this->signUpErrors["username"] = empty($this->username) ? 0 : 1;
         if ($this->signUpErrors["username"] == 1) {
-            $this->signUpErrors["reservedUsername"] = $this->isReservedUsername($this->username);
+            $this->signUpErrors["reservedUsername"] = $this->reservedUsername($this->username);
         } else {
             $this->signUpErrors["reservedUsername"] = 0;
         }
@@ -105,7 +105,7 @@ class LoginView extends LoginController
         if ($this->signUpErrors["email"] == 1) {
             $this->signUpErrors["validEmail"] = filter_var($this->email, FILTER_VALIDATE_EMAIL) ? 1 : 0;
             if ($this->signUpErrors["validEmail"] == 1) {
-                $this->signUpErrors["reservedEmail"] = $this->isReservedEmail($this->email);
+                $this->signUpErrors["reservedEmail"] = $this->reservedEmail($this->email);
             } else {
                 $this->signUpErrors["reservedEmail"] = 0;
             }

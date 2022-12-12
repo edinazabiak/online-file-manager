@@ -4,17 +4,17 @@ class LoginController extends LoginModel {
 
     public function __construct() {}
 
-    public function isExistsUsername(string $username, string $password) : bool
+    public function existsUsername(string $username, string $password) : bool
     {
         return $this->verifyUserByUsername($username, $password);
     }
 
-    public function isReservedUsername(string $username) : bool
+    public function reservedUsername(string $username) : bool
     {
         return $this->verifyUsername($username);
     }
 
-    public function isReservedEmail(string $email) : bool
+    public function reservedEmail(string $email) : bool
     {
         return $this->verifyEmail($email);
     }

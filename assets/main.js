@@ -30,22 +30,4 @@ $(document).ready(function () {
         $(".select-options").hide(300);
     });
 
-    // $(document).on('click', '.selected_files', function() {
-    //     var selected_files_id = [];
-
-    //     $('.selected_files:checked').each(function() {
-    //         $selected_files_id = $(this).val();
-    //     });
-
-    //     console.log($selected_files_id);
-
-    //     $.ajax({
-    //         method: "POST", 
-    //         data: {selected_files_id: selected_files_id}, 
-    //         success: function(data){
-    //             console.log(data);
-    //         }
-    //     })
-    // });
-
 });

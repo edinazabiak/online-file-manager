@@ -4,11 +4,8 @@ class HomeView extends HomeController {
 
     public function __construct(
         private array $files = [],
-        private string $sort_id = "1",
-        private string $search = "",
         private int $total_pages = 0,
-        private int $active_page = 1, 
-        private array $selected = []
+        private int $active_page = 1
         ) {}
 
     public function downloadFile()
@@ -45,31 +42,33 @@ class HomeView extends HomeController {
     public function sort() : void
     {
         if (isset($_POST["sort"])) {
-            $this->sort_id = $_POST["sort_id"];
-            $this->files = $this->listOfFiles($this->sort_id, 1);
+            $_SESSION['search'] = $_POST["search_text"];
+            $_SESSION['sort'] = $_POST["sort_id"];
+            $this->files = $this->listOfFiles($_SESSION['sort'], 1, $_SESSION['search']);
+            $this->total_pages = $this->countOfPages($_SESSION['sort'], $_SESSION['search']);
         }
     }
 
     public function search(): void
     {
         if (isset($_POST["search"])) {
-            $this->search = $_POST["search_text"];
-            $this->total_pages = $this->countOfPages($this->sort_id, $this->search);
-            $this->files = $this->listOfFiles($this->sort_id, 1, $this->search);
+            $_SESSION['search'] = $_POST["search_text"];
+            $this->total_pages = $this->countOfPages($_SESSION['sort'], $_SESSION['search']);
+            $this->files = $this->listOfFiles($_SESSION['sort'], 1, $_SESSION['search']);
         }
     }
 
     public function all() : void
     {
         if (isset($_POST["all"])) {
-            $this->files = $this->listOfFiles($this->sort_id, 1);
-        }
-    }
-
-    public function chooseFile()
-    {
-        if (isset($_POST["send-file"])) {
-            echo "Küld";
+            $_SESSION['search'] = "";
+            $this->files = $this->listOfFiles($_SESSION['sort'], 1, $_SESSION['search']);
+            $this->total_pages = $this->countOfPages($_SESSION['sort'], $_SESSION['search']);
+            if ($this->active_page == 1) {
+                header("Location: .");
+            } else {
+                header("Location: ../");
+            }
         }
     }
 
@@ -88,7 +87,7 @@ class HomeView extends HomeController {
             $num = 1;
             foreach($this->files as $file) {
                 echo "
-                <tr>
+                <tr id='" . $file['id'] . "'>
                     <td>" . $num . "</td>
                     <td>" . $file['name'] . "</td>
                     <td>";
@@ -127,11 +126,12 @@ class HomeView extends HomeController {
             <form class='btn-forms' method='POST'>";
         if ($this->active_page == 1) {
             echo "<a href='./upload' class='btn btn-primary' name='new'><ion-icon name='cloud-upload-outline'></ion-icon> Fájl feltöltése</a>
-            <a href='./add-new-file' class='btn btn-secondary' name='new'><ion-icon name='add-outline'></ion-icon> Új fájl létrehozása</a>";
-            //<a href='.' class='btn btn-light' name='send-file'><ion-icon name='send-outline'></ion-icon> Fájl küldése</a>
+            <a href='./add-new-file' class='btn btn-secondary' name='new'><ion-icon name='add-outline'></ion-icon> Új fájl létrehozása</a>
+            <a href='./send-file' class='btn btn-light' name='send-file'><ion-icon name='send-outline'></ion-icon> Fájl küldése</a>";
         } else {
             echo "<a href='../upload' class='btn btn-primary' name='new'><ion-icon name='cloud-upload-outline'></ion-icon> Fájl feltöltése</a>
-            <a href='../add-new-file' class='btn btn-secondary' name='new'><ion-icon name='add-outline'></ion-icon> Új fájl létrehozása</a>";
+            <a href='../add-new-file' class='btn btn-secondary' name='new'><ion-icon name='add-outline'></ion-icon> Új fájl létrehozása</a>
+            <a href='../send-file' class='btn btn-light' name='send-file'><ion-icon name='send-outline'></ion-icon> Fájl küldése</a>";
         }
         echo "
             </form>
@@ -139,23 +139,20 @@ class HomeView extends HomeController {
 
         $this->all();
         echo "<form class='btn-forms' method='POST'>
-            <button type='submit' class='btn btn-primary' name='all'><ion-icon name='apps-outline'></ion-icon> Mind</button>
-        </form>";
-        
+            <button type='submit' class='btn btn-primary' name='all'><ion-icon name='apps-outline'></ion-icon> Mind</button>";
+
         $this->search();
-        echo "<form class='btn-forms' method='POST'>
+        echo "
         <div class='custom-search'>
-            <input type='text' name='search_text' id='search_text' placeholder='Keresés'>
+            <input type='text' name='search_text' id='search_text' placeholder='Keresés' value='" . $_SESSION['search'] . "'>
             <button type='submit' id='search' name='search'><ion-icon name='search-outline'></ion-icon></button>
-        </div>
-        </form>";
+        </div>";
 
         $this->sort();
         echo "
-        <form class='btn-forms' method='POST'>
                 <div class='custom-select'>
                     <div class='selected-mode'>";
-        if ($this->sort_id == "1") {
+        if ($_SESSION['sort'] == "1") {
             echo "<input type='hidden' name='sort_id' id='sort_id' value='1'>
             <p>Fájlok neve szerint</p>";
         } else {
@@ -190,8 +187,10 @@ class HomeView extends HomeController {
             } else {
                 if ($i == 1) {
                     echo "<a class='pagination-num' href='./../home'>" . $i . "</a>";
-                } else {
+                } else if ($this->active_page == 1) {
                     echo "<a class='pagination-num' href='./home/" . $i . "'>" . $i . "</a>";
+                } else {
+                    echo "<a class='pagination-num' href='./../home/" . $i . "'>" . $i . "</a>";
                 }
             }
         }
@@ -217,9 +216,16 @@ class HomeView extends HomeController {
 
     public function showHome(int $page_num) : void
     {
-        $this->files = $this->listOfFiles($this->sort_id, $page_num);
-        $this->total_pages = $this->countOfPages($this->sort_id);
+        if (empty($_SESSION['sort'])) {
+            $_SESSION['sort'] = "1";
+        }
+        if (empty($_SESSION['search'])) {
+            $_SESSION['search'] = "";
+        }
+
         $this->active_page = $page_num;
+        $this->files = $this->listOfFiles($_SESSION['sort'], $this->active_page, $_SESSION['search']);
+        $this->total_pages = $this->countOfPages($_SESSION['sort'], $_SESSION['search']);
 
         $this->deleteFile();
         $this->downloadFile();

@@ -289,15 +289,11 @@ main.modalBlur > *:not(.modal){
     display: block;
 }
 
-.checkbox-form {
-    width: auto;
-}
 
 
 
 
-
-/* Upload, new file, send */
+/* Upload, search, filter */
 .functions-section {
     display: flex;
     flex-direction: row;
@@ -367,7 +363,7 @@ main.modalBlur > *:not(.modal){
 
 
 
-/* Új fájl létrehozása és módosítása */
+/* Create new file and modify */
 .file-form {
     align-items: flex-start;
     width: calc(100% - 40rem);
@@ -392,11 +388,89 @@ main.modalBlur > *:not(.modal){
     width: 100%;
 }
 
+.warning-info {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--bg-color);
+    border-radius: 10px;
+    color: var(--bg-color);
+    padding: 10px;
+    margin: 1rem 0;
+    width: 100%;
+}
 
 
 
 
-/* 404 error */
+
+/* Send file */
+.selectable-box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+}
+
+.checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin: .5rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: var(--light-primary-color);
+}
+
+.checkbox-container:hover input ~ .checkmark {
+    background-color: var(--medium-primary-color);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: var(--medium-primary-color);
+}
+
+.checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+.checkbox-container .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+
+
+
+
+/* 404 hiba */
 .http-error {
     display: flex;
     flex-direction: column;
